@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/sailors">
+
+    <fragment
+        android:id="@+id/pirates"
+        android:name="com.example.hacksai.ui.fragments.pirates.PiratesFragment"
+        android:label="fragment_pirates"
+        tools:layout="@layout/fragment_pirates" >
+        <action
+            android:id="@+id/action_pirates_to_shipCardFragment"
+            app:destination="@id/shipCardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/sailors"
+        android:name="com.example.hacksai.ui.fragments.sailors.SailorsFragment"
+        android:label="fragment_sailors"
+        tools:layout="@layout/fragment_sailors" >
+        <action
+            android:id="@+id/action_sailors_to_shipCardFragment"
+            app:destination="@id/shipCardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/shipCardFragment"
+        android:name="com.example.hacksai.ui.fragments.shipCard.ShipCardFragment"
+        android:label="fragment_ship_card"
+        tools:layout="@layout/fragment_ship_card" >
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

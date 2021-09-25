@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/pirates"
+        android:title="@string/pirates"
+        android:icon="@drawable/pirates_selector"/>
+
+    <item
+        android:id="@+id/sailors"
+        android:title="@string/sailors"
+        android:icon="@drawable/sailors_selector" />
+
+</menu>
