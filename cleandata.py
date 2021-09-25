@@ -8,9 +8,7 @@ import pandas as pd
 import datetime
 import numpy as np
 import math
-df = pd.read_csv(r'C:\a.csv')
-index = df[df['velocity'] == 'None'].index
-df = df.drop(index)
+
 
 #df['is stay'] = np.zeros(df.shape[0])
 #df['dist_table'] = np.array([0]*df.shape[0])
@@ -24,21 +22,26 @@ df = df.drop(index)
 # In[2]:
 
 
-df_cut = pd.DataFrame(columns=['ship', 'record', 'time', 'latitude', 'longitude', 'course', 'velocity', 'sure_tral'])
+##################################
+def read_and_cut(path):
+    lat = 0
+    long = 0
+    df = pd.read_csv(path)
+    index = df[df['velocity'] == 'None'].index
+    df = df.drop(index) 
+    
+    df_cut = pd.DataFrame(columns=['ship', 'record', 'time', 'latitude', 'longitude', 'course', 'velocity', 'sure_tral'])
+    df_cut = df.loc[0:10000]
 
-df_cut = df.loc[0:2500]
-
-index = df_cut[df_cut['velocity'] == 'None'].index
-df_cut = df_cut.drop(index)
-
-df_cut['dist_table'] = np.array([0]*df_cut.shape[0])
-df_cut['dist_vel'] = np.array([0]*df_cut.shape[0])
-df_cut['dist_table'].apply(float)
-df_cut['dist_vel'].apply(float)
-df_cut['velocity'] = df_cut['velocity'].apply(float)
-df_cut['time'] = pd.to_datetime(df_cut['time'])
-df_cut['is stay'] = np.zeros(df_cut.shape[0])
-
+    df_cut['dist_table'] = pd.Series(np.array([0]*df_cut.shape[0]))
+    df_cut['dist_vel'] = pd.Series(np.array([0]*df_cut.shape[0]))
+    df_cut['dist_table'].apply(float)
+    df_cut['dist_vel'].apply(float)
+    df_cut['velocity'] = df_cut['velocity'].apply(float)
+    df_cut['time'] = pd.to_datetime(df_cut['time'])
+    df_cut['is stay'] = pd.Series(np.zeros(df_cut.shape[0]))
+    return fill_dist_vel_dist_table(df_cut, lat, long)
+###################################
 
 # In[3]:
 
@@ -50,8 +53,7 @@ df_cut['is stay'] = np.zeros(df_cut.shape[0])
 # In[4]:
 
 
-lat = 0
-long = 0
+
 def measure_distance_from_table(df, i, lat, long):
     lat += df['latitude'].iloc[i]
     long += df['longitude'].iloc[i]
@@ -67,12 +69,14 @@ def measure_distance_from_velocity(df, i):
 # In[5]:
 
 
-for i in range(1, df_cut.shape[0]):
-    res = list(measure_distance_from_table(df_cut, i, lat, long))
-    df_cut['dist_table'].iloc[i] = res[0]
-    df_cut['dist_vel'].iloc[i] = measure_distance_from_velocity(df_cut, i)
-    lat = res[1]
-    long = res[2]
+def fill_dist_vel_dist_table(df_cut, lat, long):
+    for i in range(1, df_cut.shape[0]):
+        res = list(measure_distance_from_table(df_cut, i, lat, long))
+        df_cut['dist_table'].loc[i] = res[0]
+        df_cut['dist_vel'].loc[i] = measure_distance_from_velocity(df_cut, i)
+        lat = res[1]
+        long = res[2]
+    return df_cut
 
 
 # In[6]:
@@ -101,8 +105,6 @@ def fix_data(df):
     index1 = list(set(index1))
     df=df.drop(index=index1)
     return df
-fix_data(df_cut)
-print(df_cut.shape)
 
 
 # In[8]:
@@ -124,12 +126,11 @@ def check_daily_staying(df):
                 df['is stay'][(df_cut['ship'] == k) & (df['record'] == i)] = False
             else:
                 df['is stay'][(df_cut['ship'] == k) & (df['record'] == i)] = True
+    return df
 
 
 # In[9]:
 
-
-check_daily_staying(df_cut)
 
 
 # In[12]:
@@ -159,7 +160,6 @@ def show_hist(start,fin, df_cut):
         plt.title(f'{i} ship')
         plt.show()
     
-show_hist(1,3, df_cut)
 
 
 # In[11]:
