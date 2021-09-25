@@ -23,26 +23,34 @@ import math
 
 
 ##################################
-def read_and_cut(path, nums):
-    lat = 0
-    long = 0
+def read(path, nums):
     df = pd.read_csv(path)
-    index = df[df['velocity'] == 'None'].index
-    df = df.drop(index)
+    df['velocity'].loc[(df['velocity'] == "None")] = np.NaN
+    df['course'].loc[(df['course'] == "None")] = np.NaN
+    df['record'].loc[(df['record'] == "None")] = np.NaN
+    df['time'].loc[(df['time'] == "None")] = np.NaN
+
+    df.dropna(how="any", inplace=True)
     df.reset_index(drop=True, inplace=True)
 
-    df_cut = pd.DataFrame(columns=['ship', 'record', 'time', 'latitude', 'longitude', 'course', 'velocity', 'sure_tral'])
+    df_cut = pd.DataFrame(
+        columns=['ship', 'record', 'time', 'latitude', 'longitude', 'course', 'velocity', 'sure_tral'])
     for num in nums:
         df_cut = df_cut.append(df[df["ship"] == num])
     df_cut.reset_index(drop=True, inplace=True)
 
-    df_cut['dist_table'] = pd.Series(np.array([0]*df_cut.shape[0]))
-    df_cut['dist_vel'] = pd.Series(np.array([0]*df_cut.shape[0]))
-    df_cut['dist_table'].apply(float)
-    df_cut['dist_vel'].apply(float)
+    df_cut['dist_table'] = pd.Series(np.array([0] * df_cut.shape[0])).apply(float)
+    df_cut['dist_vel'] = pd.Series(np.array([0] * df_cut.shape[0])).apply(float)
     df_cut['velocity'] = df_cut['velocity'].apply(float)
     df_cut['time'] = pd.to_datetime(df_cut['time'])
-    df_cut['is stay'] = pd.Series(np.zeros(df_cut.shape[0]))
+    df_cut['is stay'] = pd.Series(np.array([0] * df_cut.shape[0]))
+    return df_cut
+
+def read_and_cut(path, nums):
+    lat = 0
+    long = 0
+    df_cut = read(path, nums)
+
     df_cut = fill_dist_vel_dist_table(df_cut, lat, long)
     df_cut = check_daily_staying(df_cut, nums)
     return df_cut
@@ -116,10 +124,7 @@ def fix_data(df):
 
 
 # In[8]:
-
-
 def check_daily_staying(df, nums):
-    ship_count = int(df['ship'].max())
     for k in nums:
         record_count = int(df[df['ship'] == k]['record'].max())
         for i in range(1, record_count):
