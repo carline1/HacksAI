@@ -23,15 +23,18 @@ import math
 
 
 ##################################
-def read_and_cut(path):
+def read_and_cut(path, nums):
     lat = 0
     long = 0
     df = pd.read_csv(path)
     index = df[df['velocity'] == 'None'].index
-    df = df.drop(index) 
-    
+    df = df.drop(index)
+    df.reset_index(drop=True, inplace=True)
+
     df_cut = pd.DataFrame(columns=['ship', 'record', 'time', 'latitude', 'longitude', 'course', 'velocity', 'sure_tral'])
-    df_cut = df.loc[0:10000]
+    for num in nums:
+        df_cut = df_cut.append(df[df["ship"] == num])
+    df_cut.reset_index(drop=True, inplace=True)
 
     df_cut['dist_table'] = pd.Series(np.array([0]*df_cut.shape[0]))
     df_cut['dist_vel'] = pd.Series(np.array([0]*df_cut.shape[0]))
@@ -40,7 +43,9 @@ def read_and_cut(path):
     df_cut['velocity'] = df_cut['velocity'].apply(float)
     df_cut['time'] = pd.to_datetime(df_cut['time'])
     df_cut['is stay'] = pd.Series(np.zeros(df_cut.shape[0]))
-    return fill_dist_vel_dist_table(df_cut, lat, long)
+    df_cut = fill_dist_vel_dist_table(df_cut, lat, long)
+    df_cut = check_daily_staying(df_cut, nums)
+    return df_cut
 ###################################
 
 # In[3]:
@@ -62,21 +67,23 @@ def measure_distance_from_table(df, i, lat, long):
     return (dist_lat ** 2 + dist_long**2)**0.5, lat, long
 
 def measure_distance_from_velocity(df, i):
-    delta_time = (df['time'].iloc[i] - df['time'].iloc[i-1]).seconds / 3600
-    return 1.852 * df['velocity'].iloc[i] * delta_time
+    dataframe = df
+    delta_time = (dataframe['time'].iloc[i] - dataframe['time'].iloc[i-1]).seconds / 3600
+    return 1.852 * dataframe['velocity'].iloc[i] * delta_time
 
 
 # In[5]:
 
 
 def fill_dist_vel_dist_table(df_cut, lat, long):
-    for i in range(1, df_cut.shape[0]):
-        res = list(measure_distance_from_table(df_cut, i, lat, long))
-        df_cut['dist_table'].loc[i] = res[0]
-        df_cut['dist_vel'].loc[i] = measure_distance_from_velocity(df_cut, i)
+    df = df_cut
+    for i in range(1, df.shape[0]):
+        res = list(measure_distance_from_table(df, i, lat, long))
+        df['dist_table'].loc[i] = res[0]
+        df['dist_vel'].loc[i] = measure_distance_from_velocity(df, i)
         lat = res[1]
         long = res[2]
-    return df_cut
+    return df
 
 
 # In[6]:
@@ -84,7 +91,7 @@ def fill_dist_vel_dist_table(df_cut, lat, long):
 
 def time_delta(df, i):
     # return interval in seconds
-    return (df['time'].iloc[i]- df['time'].iloc[i - 1]).seconds
+    return (df['time'].iloc[i] - df['time'].iloc[i - 1]).seconds
 
 
 # In[7]:
@@ -100,32 +107,30 @@ def fix_data(df):
             else:
                 df['velocity'].iloc[i] = df['dist_table'].iloc[i] / time_delta(df, i) * 3600 
         elif df['dist_table'].iloc[i] / df['dist_vel'].iloc[i] >= 2:
-                record = df['record'].iloc[i]
-                index1 += list(df[df['record'] == record].index)
+            record = df['record'].iloc[i]
+            index1 += list(df[df['record'] == record].index)
     index1 = list(set(index1))
-    df=df.drop(index=index1)
+    df = df.drop(index=index1)
+    df.reset_index(drop=True, inplace=True)
     return df
 
 
 # In[8]:
 
 
-def check_daily_staying(df):
-    coordinates = []
-    distances = []
-    ship_count = df['ship'].max()
-    for k in range(1,ship_count):
-        record_count = df[df['ship'] == k]['record'].max()
-        for i in range(1,record_count):
+def check_daily_staying(df, nums):
+    ship_count = int(df['ship'].max())
+    for k in nums:
+        record_count = int(df[df['ship'] == k]['record'].max())
+        for i in range(1, record_count):
             summary_lat = df[(df['ship'] == k) & (df['record'] == i)]['latitude'].sum()*111.11
             summary_long = df[(df['ship'] == k) & (df['record'] == i)]['longitude'].sum()*111.11
             
             distance = (summary_lat**2 + summary_long**2)**0.5
-            
             if distance >= 1.5:
-                df['is stay'][(df_cut['ship'] == k) & (df['record'] == i)] = False
+                df['is stay'][(df['ship'] == k) & (df['record'] == i)] = False
             else:
-                df['is stay'][(df_cut['ship'] == k) & (df['record'] == i)] = True
+                df['is stay'][(df['ship'] == k) & (df['record'] == i)] = True
     return df
 
 
