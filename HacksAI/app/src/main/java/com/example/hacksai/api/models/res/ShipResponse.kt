@@ -2,5 +2,7 @@ package com.example.hacksai.api.models.res
 
 
 data class ShipResponse(
-    val ships: List<ShipX>
+    val brak: Boolean,
+    val name: String,
+    val tral: Boolean
 )

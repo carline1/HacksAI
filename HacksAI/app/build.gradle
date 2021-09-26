@@ -2,7 +2,14 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
+
+//repositories {
+//    maven {
+//        url "http://maven.google.com/"
+//    }
+//}
 
 android {
     compileSdk 31
@@ -24,11 +31,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
 
     buildFeatures {
@@ -44,6 +51,9 @@ android {
 }
 
 dependencies {
+
+    // Yandex MapKit
+    implementation 'com.yandex.android:maps.mobile:4.0.0-full'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     def nav_version = "2.4.0-alpha09"
@@ -86,7 +96,20 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
 
-    testImplementation 'junit:junit:4.+'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }
+
+//secrets {
+//    propertiesFileName 'local.properties'
+//
+//    // A properties file containing default secret values. This file can be checked in version
+//    // control.
+//    defaultPropertiesFileName = 'local.defaults.properties'
+//
+//    // Configure which keys should be ignored by the plugin by providing regular expressions.
+//    // "sdk.dir" is ignored by default.
+//    ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
+//    ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
+//}

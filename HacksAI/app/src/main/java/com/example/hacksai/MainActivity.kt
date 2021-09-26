@@ -10,12 +10,16 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.example.hacksai.databinding.ActivityMainBinding
+import com.yandex.mapkit.MapKitFactory
 
 class MainActivity : AppCompatActivity() {
     private var binding: ActivityMainBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        MapKitFactory.setApiKey("4f6ff30f-54f1-46db-a07a-101842214a0e")
+        MapKitFactory.initialize(this)
 
         val binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         this.binding = binding

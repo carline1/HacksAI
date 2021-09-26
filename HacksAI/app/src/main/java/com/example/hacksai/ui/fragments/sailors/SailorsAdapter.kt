@@ -8,12 +8,12 @@ import android.widget.TextView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hacksai.R
-import com.example.hacksai.api.models.res.ShipX
+import com.example.hacksai.api.models.res.ShipResponse
 
-class SailorsAdapter(private val dataSet: List<ShipX>) :
+class SailorsAdapter(private val dataSet: List<ShipResponse>) :
     RecyclerView.Adapter<SailorsAdapter.SailorsViewHolder>() {
 
-    private fun getItem(position: Int): ShipX {
+    private fun getItem(position: Int): ShipResponse {
         return dataSet[position]
     }
 
@@ -21,7 +21,7 @@ class SailorsAdapter(private val dataSet: List<ShipX>) :
         val textView: TextView = itemView.findViewById(R.id.tvSheepId)
         val delimiter: View = itemView.findViewById(R.id.sailorsDelimiter)
 
-        fun bind(item: ShipX?, position: Int) {
+        fun bind(item: ShipResponse?, position: Int) {
 
             textView.text = textView.context.resources.getString(
                 R.string.ship_id,

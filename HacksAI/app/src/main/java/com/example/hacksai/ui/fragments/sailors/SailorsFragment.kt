@@ -38,13 +38,13 @@ class SailorsFragment : Fragment(R.layout.fragment_sailors) {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    Log.d("TEST", it.ships[0].toString())
+                    Log.d("TEST", it[0].toString())
                     val recyclerView = binding?.sailorsRecyclerView
                     recyclerView?.layoutManager = LinearLayoutManager(view.context)
-                    recyclerView?.adapter = SailorsAdapter(it.ships)
+                    recyclerView?.adapter = SailorsAdapter(it)
                 },
                 {
-
+                    Log.d("TEST", "error loading ship list -> ${it.localizedMessage}")
                 })
         )
     }

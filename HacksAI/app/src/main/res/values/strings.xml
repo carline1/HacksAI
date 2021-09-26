@@ -2,7 +2,7 @@
     <string name="app_name">HacksAI</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="pirates">Браконьеры</string>
+    <string name="pirates">Подозрительные судна</string>
     <string name="sailors">Легальные судна</string>
     <string name="ship_id">ID корабля: %1$s</string>
 </resources>
