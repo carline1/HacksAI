@@ -14,8 +14,8 @@ interface MainService {
     @GET("getships")
     fun getShips(): Single<List<ShipResponse>>
 
-//    @GET("getships")
-//    fun getImage(@Query("id") id: String): Single<ShipImageResponse>
+    @GET("getships")
+    fun getImageById(@Query("id") id: String): Single<ShipImageResponse>
 
     @GET("getships")
     fun getImage(@QueryMap parameters: Map<String, String>): Single<List<ShipDayResponse>>

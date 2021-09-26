@@ -17,7 +17,8 @@ class ShipCardViewModel(application: Application) : AndroidViewModel(application
 
     val compositeDisposable = CompositeDisposable()
 
-    fun getImageById(query: Map<String, String>) = mainService.getImage(query)
+    fun getImage(query: Map<String, String>) = mainService.getImage(query)
+    fun getImageById(id: String) = mainService.getImageById(id)
 
     override fun onCleared() {
         super.onCleared()
